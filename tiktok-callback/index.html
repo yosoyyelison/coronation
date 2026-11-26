@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Conectando con TikTok · CoroNation Dashboard</title><link rel="stylesheet" href="../style.css"></head>
+<body><main>
+<h1>Conectando con TikTok…</h1>
+<p id="msg">Volviendo al panel de CoroNation en este equipo.</p>
+<p class="muted">TikTok no admite direcciones locales, así que esta página solo reenvía la respuesta de TikTok al panel, que funciona en este mismo ordenador. No guarda nada.</p>
+<script>
+  // Forwards TikTok's answer to the dashboard on this computer only. Fixed destination: never an open redirect.
+  (function () {
+    var target = "https://localhost:3210/api/oauth/tiktok/callback";
+    var inParams = new URLSearchParams(location.search);
+    var out = new URLSearchParams();
+    ["code", "state", "scopes", "error", "error_description"].forEach(function (k) {
+      var v = inParams.get(k);
+      if (v !== null) out.set(k, v);
+    });
+    if (!out.has("state") || !(out.has("code") || out.has("error"))) {
+      document.getElementById("msg").textContent = "No hay una respuesta de TikTok que reenviar. Vuelve a conectar desde Cuentas en el panel.";
+      return;
+    }
+    history.replaceState(null, "", location.pathname); // don't leave the code in this page's history
+    location.replace(target + "?" + out.toString());
+  })();
+</script>
+</main></body></html>
